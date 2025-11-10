@@ -118,3 +118,4 @@ refactor: clean up CLI integration
 ## 📄 License
 
 MIT License © 2025 – Open educational project based on public France Travail datasets.
+https://www.data.gouv.fr/datasets/repertoire-operationnel-des-metiers-et-des-emplois-rome/
