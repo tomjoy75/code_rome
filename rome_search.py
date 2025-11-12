@@ -3,8 +3,11 @@ def search_in_appellations(keyword: str, appellations: list[dict]) -> set[str]:
     an appellation (libelle_appellation_long or libelle_appellation_court).
     """
     codes = set()
+    keyword_lower = keyword.casefold()
     for row in appellations:
-        if keyword.casefold() in row.get("libelle_appellation_long").casefold() or keyword.casefold() in row.get("libelle_appellation_court").casefold():
+        libelle_long = row.get("libelle_appellation_long", "")
+        libelle_short = row.get("libelle_appellation_court", "")
+        if keyword_lower in libelle_long.casefold() or keyword_lower in libelle_short.casefold():
             codes.add(row["code_rome"])
     return codes
 
