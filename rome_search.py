@@ -5,6 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from rome_loader import load_csv
+from rome_enrichment import enrich_rome_entry, load_enrichment_data
 from utils import build_referentiel
 
 
@@ -85,9 +86,11 @@ def search_rome(keyword: str, data: str | Path | None = None) -> list[dict]:
     directory = _coerce_directory(data)
     appellations = _load_appellations(directory)
     referentiel = _load_referentiel(directory)
+    enrichment_data = load_enrichment_data(directory)
 
     matching_codes = search_in_appellations(keyword, appellations)
     if not matching_codes:
         raise NoSearchResultsError(f"No ROME entry matches keyword '{keyword}'.")
 
-    return get_rome_details(matching_codes, referentiel)
+    details = get_rome_details(matching_codes, referentiel)
+    return [enrich_rome_entry(detail, enrichment_data) for detail in details]

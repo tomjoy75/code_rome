@@ -5,6 +5,7 @@ from __future__ import annotations
 import argparse
 import logging
 import os
+import sys
 from pathlib import Path
 from typing import Callable
 
@@ -51,8 +52,58 @@ def _select_formatter(chosen_format: str) -> Callable[[list[dict]], str]:
     return format_as_markdown
 
 
+def _run_interactive_mode() -> None:
+    """Launch an interactive session to query and export ROME data."""
+
+    print("Mode interactif activé.")
+    while True:
+        job = input("Saisissez un métier : ").strip()
+        if not job:
+            print("Fin du mode interactif.")
+            break
+
+        chosen_format = input("Format de sortie (md/json/none) : ").strip().lower() or "md"
+        if chosen_format not in {"md", "json", "none"}:
+            print("Format inconnu. Merci de choisir parmi md, json ou none.")
+            continue
+
+        try:
+            results = search_rome(job)
+        except NoSearchResultsError as error:
+            logger.info("No results found for '%s': %s", job, error)
+            print(f"Aucun résultat trouvé pour {job}")
+            continue
+
+        if not results:
+            logger.info("Search returned an empty result set for '%s'.", job)
+            print(f"Aucun résultat trouvé pour {job}")
+            continue
+
+        result_count = len(results)
+
+        if chosen_format == "none":
+            suffix = "s" if result_count > 1 else ""
+            print(
+                "Aucun fichier généré pour "
+                f"{job} (format none, {result_count} résultat{suffix})"
+            )
+            continue
+
+        formatter = _select_formatter(chosen_format)
+        _ensure_output_directory()
+        output_path = _resolve_output_path(job, None, chosen_format)
+        output_path.write_text(formatter(results), encoding="utf-8")
+        suffix = "s" if result_count > 1 else ""
+        print(f"Fichier généré : {output_path} ({result_count} résultat{suffix})")
+
+
 def main() -> None:
     """Parse command-line arguments, orchestrate search, and export results."""
+
+    if len(sys.argv) == 1:
+        _configure_logger(False)
+        _run_interactive_mode()
+        return
 
     parser = argparse.ArgumentParser()
     parser.add_argument(
