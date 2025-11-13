@@ -1,5 +1,7 @@
 # 🧭 Code ROME CLI – France Travail (Local CSV Version)
 
+[![Tests passing](https://github.com/<OWNER>/<REPO>/actions/workflows/tests.yml/badge.svg)](https://github.com/<OWNER>/<REPO>/actions/workflows/tests.yml)
+
 ## 📘 Overview
 
 **Code ROME CLI** is a lightweight Python command-line tool that lets you search for French job classifications (ROME codes) by keyword — e.g. `devops`, `plumber`, `teacher`.
